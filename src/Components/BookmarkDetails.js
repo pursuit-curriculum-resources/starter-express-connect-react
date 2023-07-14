@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom"; // This will allow us to use the URL parameters (in our app, this will be the index position of the array)
+import axios from "axios";
+const API = process.env.REACT_APP_API_URL;
 
 function BookmarkDetails() {
   const [bookmark] = useState([]);
