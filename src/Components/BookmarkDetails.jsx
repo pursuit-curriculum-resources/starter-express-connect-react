@@ -1,12 +1,36 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 function BookmarkDetails() {
-  const [bookmark] = useState([]);
+  const [bookmark, setBookmark] = useState([]);
+  let navigate = useNavigate();
   let { index } = useParams();
 
-  useEffect(() => {}, []);
-  const handleDelete = () => {};
+  // On page load, load bookmark details
+  useEffect(() => {
+    fetch(`${API}/bookmarks/${index}`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJSON) => {
+        setBookmark(responseJSON);
+      })
+      .catch(() => {
+        navigate("/not-found");
+      });
+  }, [index, navigate]);
+
+  // Be able to delete a bookmark. Return to index view.
+  const handleDelete = () => {
+    fetch(`${API}/bookmarks/${index}`, { method: "DELETE" })
+      .then(() => {
+        navigate(`/bookmarks`);
+      })
+      .catch((e) => console.error(e));
+  };
+
   return (
     <article>
       <h3>

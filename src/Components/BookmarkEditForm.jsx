@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 function BookmarkEditForm() {
   let { index } = useParams();
+  const navigate = useNavigate();
 
   const [bookmark, setBookmark] = useState({
     name: "",
@@ -20,11 +23,38 @@ function BookmarkEditForm() {
     setBookmark({ ...bookmark, isFavorite: !bookmark.isFavorite });
   };
 
-  useEffect(() => {}, []);
+  // Update a bookmark. Redirect to show view
+  const updateBookmark = () => {
+    fetch(`${API}/bookmarks/${index}`, {
+      method: "PUT",
+      body: JSON.stringify(bookmark),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(() => {
+        navigate(`/bookmarks/${index}`);
+      })
+      .catch((error) => console.error("catch", error));
+  };
+
+  // On page load, fill in the form with the bookmark data.
+  useEffect(() => {
+    fetch(`${API}/bookmarks/${index}`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJSON) => {
+        setBookmark(responseJSON);
+      })
+      .catch((error) => console.error(error));
+  }, [index]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    updateBookmark();
   };
+
   return (
     <div className="Edit">
       <form onSubmit={handleSubmit}>

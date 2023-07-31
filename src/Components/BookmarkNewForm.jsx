@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 function BookmarkNewForm() {
+  const navigate = useNavigate();
   const [bookmark, setBookmark] = useState({
     name: "",
     url: "",
@@ -8,6 +12,21 @@ function BookmarkNewForm() {
     isFavorite: false,
     description: "",
   });
+
+  // Add a bookmark. Redirect to the index view.
+  const addBookmark = () => {
+    fetch(`${API}/bookmarks`, {
+      method: "POST",
+      body: JSON.stringify(bookmark),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(() => {
+        navigate(`/bookmarks`);
+      })
+      .catch((error) => console.error("catch", error));
+  };
 
   const handleTextChange = (event) => {
     setBookmark({ ...bookmark, [event.target.id]: event.target.value });
@@ -19,7 +38,9 @@ function BookmarkNewForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    addBookmark();
   };
+
   return (
     <div className="New">
       <form onSubmit={handleSubmit}>
